@@ -1,0 +1,9 @@
+docker run --name my-redis --restart=always -d -p 6379:6379 --network=bridge redis
+
+mvn package
+
+mvn test
+
+java -jar target/redisolar-1.0.jar load
+
+java -jar target/redisolar-1.0.jar server config.yml

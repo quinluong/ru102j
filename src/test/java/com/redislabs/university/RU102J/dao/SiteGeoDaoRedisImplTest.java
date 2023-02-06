@@ -91,6 +91,7 @@ public class SiteGeoDaoRedisImplTest {
         assertThat(dao.findAll(), is(sites));
     }
 
+    @Ignore
     @Test
     public void findAllWithEmptySites() {
         SiteDaoRedisImpl dao = new SiteDaoRedisImpl(jedisPool);

@@ -10,6 +10,7 @@ import redis.clients.jedis.Transaction;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Map;
+import redis.clients.jedis.Response;
 
 public class SiteStatsDaoRedisImpl implements SiteStatsDao {
 
@@ -47,7 +48,8 @@ public class SiteStatsDaoRedisImpl implements SiteStatsDao {
             ZonedDateTime day = reading.getDateTime();
             String key = RedisSchema.getSiteStatsKey(siteId, day);
 
-            updateBasic(jedis, key, reading);
+//            updateBasic(jedis, key, reading);
+            updateOptimized(jedis, key, reading);
         }
     }
 
@@ -81,6 +83,22 @@ public class SiteStatsDaoRedisImpl implements SiteStatsDao {
     // Challenge #3
     private void updateOptimized(Jedis jedis, String key, MeterReading reading) {
         // START Challenge #3
+        
+        String reportingTime = ZonedDateTime.now(ZoneOffset.UTC).toString();
+        
+        Transaction multi = jedis.multi();
+        
+        multi.hset(key, SiteStats.reportingTimeField, reportingTime);
+        multi.hincrBy(key, SiteStats.countField, 1);
+        multi.expire(key, weekSeconds);
+        
+        CompareAndUpdateScript script = new CompareAndUpdateScript(jedisPool);
+        script.updateIfGreater(multi, key, SiteStats.maxWhField, reading.getWhGenerated());
+        script.updateIfLess(multi, key, SiteStats.minWhField, reading.getWhGenerated());
+        script.updateIfGreater(multi, key, SiteStats.maxCapacityField, getCurrentCapacity(reading));
+        
+        multi.exec();
+        
         // END Challenge #3
     }
 
