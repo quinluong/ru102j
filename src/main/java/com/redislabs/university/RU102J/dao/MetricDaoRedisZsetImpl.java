@@ -54,8 +54,8 @@ public class MetricDaoRedisZsetImpl implements MetricDao {
         // END Challenge #2
         
         MeasurementMinute mm = new MeasurementMinute(value, minuteOfDay);
-        
         jedis.zadd(metricKey, minuteOfDay, mm.toString());
+        jedis.expire(metricKey, METRIC_EXPIRATION_SECONDS);
     }
 
     /**

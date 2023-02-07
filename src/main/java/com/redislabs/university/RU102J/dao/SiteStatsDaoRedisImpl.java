@@ -83,6 +83,7 @@ public class SiteStatsDaoRedisImpl implements SiteStatsDao {
     // Challenge #3
     private void updateOptimized(Jedis jedis, String key, MeterReading reading) {
         // START Challenge #3
+        // END Challenge #3
         
         String reportingTime = ZonedDateTime.now(ZoneOffset.UTC).toString();
         
@@ -98,8 +99,6 @@ public class SiteStatsDaoRedisImpl implements SiteStatsDao {
         script.updateIfGreater(multi, key, SiteStats.maxCapacityField, getCurrentCapacity(reading));
         
         multi.exec();
-        
-        // END Challenge #3
     }
 
     private Double getCurrentCapacity(MeterReading reading) {
