@@ -1,4 +1,5 @@
 docker run --name my-redis --restart=always -d -p 6379:6379 --network=bridge redis
+docker run --name my-redis-stack --restart=always -d -p 6379:6379 -p 8001:8001 --network=bridge redis/redis-stack
 
 mvn package
 
